@@ -61,3 +61,25 @@ try {
     next(error)    
 }
 }
+
+
+export const getAllUsers = async (req,res,next) => {
+ try {
+    const users =   await UserModel.find({}, '-password')
+    res.json(users)
+ } catch (error) {
+    next(error)  
+ }
+}
+
+export const getUserById = async (req,res,next) => {
+  try {
+      const users = await UserModel.findById(req.params.id, '-password')
+      if (!users) {
+          return res.status(404).json('user not found')
+      }
+      res.json(users)
+  } catch (error) {
+    next(error)
+  }
+}
