@@ -1,5 +1,6 @@
 
 import { UserModel } from "../Models/user.js";
+import { mailTransporter } from "../Utils/mail.js";
 import { loginUserValidator, registerUserValidator } from "../Validators/user.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
@@ -16,6 +17,11 @@ try {
         }
         const hashedPassword = bcrypt.hashSync(value.password, 10)
         await UserModel.create({...value, password: hashedPassword})
+        await mailTransporter.sendMail({
+            to: value.email,
+            subject: 'USER REGISTRATION',
+            text: 'Your Account has been registered successfully'
+        })
         res.json('user created successfully')
 } catch (error) {
     next(error)   
