@@ -38,7 +38,7 @@ try {
         if (!user) {
             return res(404).json('user does not exist')
         }
-        const correctPassword = bcrypt.compare(value.password, user.password)
+        const correctPassword = bcrypt.compareSync(value.password, user.password)
         if (!correctPassword) {
             return res.status(401).json('invalid credentials')
         }
