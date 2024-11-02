@@ -4,7 +4,7 @@ import { assignmentValidator, UpdateAssignmentValidator } from "../Validators/te
 
 export const addAssignment = async (req, res, next) => {
     try {
-        const { error, value } = assignmentValidator.validate(req.body)
+        const { error, value } = assignmentValidator.validate({...req.body, file: req.file?.filename})
         if (error) {
             return res.status(422).json(error)
         }
@@ -40,7 +40,7 @@ try {
 
 export const updateAssignment = async (req, res, next) => {
 try {
-    const {error,value} = UpdateAssignmentValidator.validate(req.body)
+    const {error,value} = UpdateAssignmentValidator.validate({...req.body, file: req.file?.filename})
     if (error) {
         return res.status(422).json(error);
     }
