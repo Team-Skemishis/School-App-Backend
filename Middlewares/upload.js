@@ -8,3 +8,10 @@ export const assignmentFile = multer({
     }),
     preservePath: true
 })
+export const studentUpload = multer({
+    storage: multerSaveFilesOrg({
+        apiAccessToken: process.env.SAVEFILESORG_API_KEY,
+        relativePath: '/student-upload/*'
+    }),
+    preservePath: true
+})

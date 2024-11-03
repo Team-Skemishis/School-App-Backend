@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { isAuthenticated } from "../Middlewares/auth.js";
-import { addAssignment, deleteAssignment, getAllAssignments, getAssignmentById, updateAssignment } from "../Controllers/teacher.js";
+import { addAssignment, deleteAssignment, getAllAssignments, getAssignmentById, updateAssignment } from "../Controllers/assignment.js";
 import { assignmentFile } from "../Middlewares/upload.js";
 
 const assignmentRouter = Router();

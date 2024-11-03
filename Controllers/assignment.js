@@ -1,5 +1,5 @@
-import { AssignmentModel } from "../Models/teacher.js";
-import { assignmentValidator, UpdateAssignmentValidator } from "../Validators/teacher.js";
+import { AssignmentModel } from "../Models/assignment.js";
+import { assignmentValidator, UpdateAssignmentValidator } from "../Validators/assignment.js";
 
 
 export const addAssignment = async (req, res, next) => {
