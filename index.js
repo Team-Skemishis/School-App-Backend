@@ -5,6 +5,8 @@ import cors from 'cors'
 import assignmentRouter from "./Routes/assignment.js"
 import studentRouter from "./Routes/student.js"
 import staffRouter from "./Routes/staff.js"
+import attendanceRouter from "./Routes/attendance.js"
+import classRouter from "./Routes/class.js"
 
 await mongoose.connect(process.env.MONGO_URI)
 
@@ -17,6 +19,8 @@ app.use(userRouter)
 app.use(assignmentRouter)
 app.use(studentRouter)
 app.use(staffRouter)
+app.use(attendanceRouter)
+app.use(classRouter)
 
 
 const port = 3004
