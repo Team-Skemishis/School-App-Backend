@@ -89,3 +89,44 @@ export const getUserById = async (req,res,next) => {
     next(error)
   }
 }
+
+export const updateUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+
+        // Optional: Validate incoming data if needed
+        if (updates.password) {
+            updates.password = bcrypt.hashSync(updates.password, 10);
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(id, updates, { new: true, select: '-password' });
+        if (!updatedUser) {
+            return res.status(404).json('User not found');
+        }
+
+        res.json({
+            message: 'User updated successfully',
+            updatedUser
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const deletedUser = await UserModel.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return res.status(404).json('User not found');
+        }
+
+        res.json({
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};

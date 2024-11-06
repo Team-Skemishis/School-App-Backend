@@ -46,7 +46,20 @@ export const getStudentById = async (req, res, next) => {
 }
 
 export const updateStudent = async (req, res, next) => {
-
+    try {
+        const {firstname,surname, classes, gender, image} = ({ ...req.body, image: req.file?.filename })
+        if (!classes) {
+            return res.status(400).json('class field is required')
+        }
+        const studentClass = await ClassModel.findOne({classNumber: classes})
+        if (!studentClass) {
+            return res.status(404).json('class not found')
+        }
+        const student = await StudentModel.findByIdAndUpdate(req.params.id, { classes: studentClass._id, firstname, surname, gender, image}, { new: true })
+        res.status(200).json(student)
+    } catch (error) {
+        next(error)
+    }
 }
 
 export const deleteStudent = async (req,res,next) => {

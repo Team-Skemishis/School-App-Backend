@@ -61,7 +61,7 @@ try {
         if (!del) {
             return res.status(404).json('Ad not found')
         }
-        res.status(200).json('Product deleted successfully')
+        res.status(200).json('Assignment deleted successfully')
 } catch (error) {
     next(error)
 }

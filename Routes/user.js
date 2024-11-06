@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, loginUser, logOut, registerUser } from "../Controllers/user.js";
+import { deleteUser, getAllUsers, getUserById, loginUser, logOut, registerUser, updateUser } from "../Controllers/user.js";
 
 const userRouter = Router()
 
@@ -8,5 +8,7 @@ userRouter.post('/users/login', loginUser)
 userRouter.post('/users/logout', logOut)
 userRouter.get('/users', getAllUsers)
 userRouter.get('/users/:id', getUserById)
+userRouter.patch('/users/:id', updateUser)
+userRouter.delete('/users/:id', deleteUser)
 
 export default userRouter
