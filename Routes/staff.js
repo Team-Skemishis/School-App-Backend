@@ -6,11 +6,11 @@ import { addStaffs, deleteStaffs, getAllStaffs, getStaffById, updateStaffs } fro
 
 const staffRouter = Router()
 
-staffRouter.post('/staffs', isAuthenticated, staffUpload.single('image'), addStaffs)
-staffRouter.get('/staffs', isAuthenticated, getAllStaffs)
-staffRouter.get('/staffs/:id', isAuthenticated, getStaffById)
-staffRouter.patch('/staffs/:id', isAuthenticated, staffUpload.single('image'), updateStaffs)
-staffRouter.delete('/staffs/:id', isAuthenticated, deleteStaffs)
+staffRouter.post('/teachers', isAuthenticated, staffUpload.single('image'), addStaffs)
+staffRouter.get('/teachers', isAuthenticated, getAllStaffs)
+staffRouter.get('/teachers/:id', isAuthenticated, getStaffById)
+staffRouter.patch('/teachers/:id', isAuthenticated, staffUpload.single('image'), updateStaffs)
+staffRouter.delete('/teachers/:id', isAuthenticated, deleteStaffs)
 
 
 export default staffRouter
