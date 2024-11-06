@@ -7,7 +7,7 @@ export const userSchema = new Schema({
     // telephone:{type: Number, required: true},
     email:{type: String, required: true, unique:true},
     password:{type:String, required:true},
-    role:{type: String, required: true, enum:['student', 'teacher', 'admin']}
+    role:{type: String, default: 'admin', enum:['student', 'teacher', 'admin']}
 
 })
 

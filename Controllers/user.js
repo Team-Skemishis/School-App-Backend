@@ -34,9 +34,9 @@ try {
         if (error) {
             return res.status(422).json(error)
         }
-        const user = await UserModel.findOne({email: value.email})
+        const user = await UserModel.findOne({email: value.email, role:value.role})
         if (!user) {
-            return res(404).json('user does not exist')
+            return res.status(404).json('user does not exist')
         }
         const correctPassword = bcrypt.compareSync(value.password, user.password)
         if (!correctPassword) {
