@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteUser, getAllUsers, getUserById, loginUser, logOut, registerTeacher, registerUser, updateUser } from "../Controllers/user.js";
+import { deleteUser, getAllTeachers, getAllUsers, getUserById, loginUser, logOut, registerTeacher, registerUser, updateUser } from "../Controllers/user.js";
 
 const userRouter = Router()
 
@@ -8,6 +8,7 @@ userRouter.post('/teachers/register', registerTeacher)
 userRouter.post('/users/login', loginUser)
 userRouter.post('/users/logout', logOut)
 userRouter.get('/users', getAllUsers)
+userRouter.get('/users/teachers', getAllTeachers)
 userRouter.get('/users/:id', getUserById)
 userRouter.patch('/users/:id', updateUser)
 userRouter.delete('/users/:id', deleteUser)

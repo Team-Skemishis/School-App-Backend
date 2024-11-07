@@ -110,6 +110,17 @@ export const getAllUsers = async (req,res,next) => {
  }
 }
 
+export const getAllTeachers = async (req, res, next) => {
+    try {
+        // Find users with the role "teacher" and exclude the password field
+        const teachers = await UserModel.find({ role: 'teacher' }, '-password');
+        res.json(teachers);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 export const getUserById = async (req,res,next) => {
   try {
       const users = await UserModel.findById(req.params.id, '-password')
