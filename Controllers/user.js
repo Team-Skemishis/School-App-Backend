@@ -59,6 +59,39 @@ export const registerTeacher = async (req, res, next) => {
         next(error);
     }
 };
+export const registerStudent = async (req, res, next) => {
+    try {
+        const { error, value } = registerUserValidator.validate(req.body);
+        if (error) {
+            return res.status(422).json(error);
+        }
+
+        // Check if the user already exists
+        const user = await UserModel.findOne({ email: value.email });
+        if (user) {
+            return res.status(409).json('User already exists');
+        }
+
+        // Hash the password
+        const hashedPassword = bcrypt.hashSync(value.password, 10);
+
+        // Create the new user
+        await UserModel.create({ ...value, password: hashedPassword });
+
+        // Send an email with email and password details, including a recommendation to reset the password
+        await mailTransporter.sendMail({
+            to: value.email,
+            subject: 'STUDENT REGISTRATION',
+            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nThank you,\nThe Team`
+        });
+
+        res.json('User created successfully');
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 export const loginUser = async (req,res,next) => {
 try {
@@ -121,6 +154,17 @@ export const getAllTeachers = async (req, res, next) => {
 };
 
 
+export const getAllStudents = async (req, res, next) => {
+    try {
+        // Find users with the role "teacher" and exclude the password field
+        const student = await UserModel.find({ role: 'student' }, '-password');
+        res.json(student);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 export const getUserById = async (req,res,next) => {
   try {
       const users = await UserModel.findById(req.params.id, '-password')
@@ -142,6 +186,22 @@ export const getTeacherById = async (req, res, next) => {
 
         if (!teacher) {
             return res.status(404).json({ message: "Teacher not found" });
+        }
+
+        res.json(teacher);
+    } catch (error) {
+        next(error);
+    }
+};
+export const getStudentById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Find the user by id and role, excluding the password field
+        const teacher = await UserModel.findOne({ _id: id, role: 'student' }, '-password');
+
+        if (!teacher) {
+            return res.status(404).json({ message: "student not found" });
         }
 
         res.json(teacher);
@@ -202,6 +262,32 @@ export const updateTeacherById = async (req, res, next) => {
     }
 };
 
+export const updateStudentById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const updates = { ...req.body };
+
+        // Remove email and password fields from the updates to prevent changes
+        delete updates.email;
+        delete updates.password;
+
+        // Find the user by id and role, and update the document
+        const updateStudent = await UserModel.findOneAndUpdate(
+            { _id: id, role: 'student' },
+            updates,
+            { new: true, runValidators: true, select: '-password' }
+        );
+
+        if (!updateStudent) {
+            return res.status(404).json({ message: "Student not found or could not be updated" });
+        }
+
+        res.json(updateStudent);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
 export const deleteUser = async (req, res, next) => {
@@ -233,6 +319,23 @@ export const deleteTeacherById = async (req, res, next) => {
         }
 
         res.status(200).json({ message: "Teacher successfully deleted" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteStudentById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Find and delete the user by id and role
+        const deletedStudent = await UserModel.findOneAndDelete({ _id: id, role: 'student' });
+
+        if (!deletedStudent) {
+            return res.status(404).json({ message: "student not found or could not be deleted" });
+        }
+
+        res.status(200).json({ message: "student successfully deleted" });
     } catch (error) {
         next(error);
     }
