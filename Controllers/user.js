@@ -28,6 +28,38 @@ try {
 }
 }
 
+export const registerTeacher = async (req, res, next) => {
+    try {
+        const { error, value } = registerUserValidator.validate(req.body);
+        if (error) {
+            return res.status(422).json(error);
+        }
+
+        // Check if the user already exists
+        const user = await UserModel.findOne({ email: value.email });
+        if (user) {
+            return res.status(409).json('User already exists');
+        }
+
+        // Hash the password
+        const hashedPassword = bcrypt.hashSync(value.password, 10);
+
+        // Create the new user
+        await UserModel.create({ ...value, password: hashedPassword });
+
+        // Send an email with email and password details, including a recommendation to reset the password
+        await mailTransporter.sendMail({
+            to: value.email,
+            subject: 'TEACHER REGISTRATION',
+            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nThank you,\nThe Team`
+        });
+
+        res.json('User created successfully');
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const loginUser = async (req,res,next) => {
 try {
         const {error,value} = loginUserValidator.validate(req.body)
