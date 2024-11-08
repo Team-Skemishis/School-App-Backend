@@ -1,4 +1,5 @@
-import mongoose, { model, Schema } from "mongoose";
+
+import mongoose, { model, Schema, Types } from "mongoose";
 
 
 export const userSchema = new Schema({
@@ -7,6 +8,9 @@ export const userSchema = new Schema({
     // telephone:{type: Number, required: true},
     email:{type: String, required: true, unique:true},
     password:{type:String, required:true},
+    avatar:{type:String},
+    classes:{type: Types.ObjectId, ref:'class'},
+    gender: {type: String, required:true, enum:['male', 'female']},
     role:{type: String, default: 'admin', enum:['student', 'teacher', 'admin']}
 
 })

@@ -22,3 +22,17 @@ export const staffUpload = multer({
     }),
     preservePath: true
 })
+export const teacherAvatar = multer({
+    storage: multerSaveFilesOrg({
+        apiAccessToken: process.env.SAVEFILESORG_API_KEY,
+        relativePath: '/teachers-avatar/*'
+    }),
+    preservePath: true
+})
+export const studentAvatar = multer({
+    storage: multerSaveFilesOrg({
+        apiAccessToken: process.env.SAVEFILESORG_API_KEY,
+        relativePath: '/students-avatar/*'
+    }),
+    preservePath: true
+})

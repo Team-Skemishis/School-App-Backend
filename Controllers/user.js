@@ -30,7 +30,7 @@ try {
 
 export const registerTeacher = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate(req.body);
+        const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
         if (error) {
             return res.status(422).json(error);
         }
@@ -61,7 +61,7 @@ export const registerTeacher = async (req, res, next) => {
 };
 export const registerStudent = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate(req.body);
+        const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
         if (error) {
             return res.status(422).json(error);
         }
@@ -236,6 +236,33 @@ export const updateUser = async (req, res, next) => {
 };
 
 
+// export const updateTeacherById = async (req, res, next) => {
+//     try {
+//         const { id } = req.params;
+//         const updates = { ...req.body };
+
+//         // Remove email and password fields from the updates to prevent changes
+//         delete updates.email;
+//         delete updates.password;
+
+//         // Find the user by id and role, and update the document
+//         const updatedTeacher = await UserModel.findOneAndUpdate(
+//             { _id: id, role: 'teacher' },
+//             updates,
+//             { new: true, runValidators: true, select: '-password' }
+//         );
+
+//         if (!updatedTeacher) {
+//             return res.status(404).json({ message: "Teacher not found or could not be updated" });
+//         }
+
+//         res.json(updatedTeacher);
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
+
 export const updateTeacherById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -245,7 +272,12 @@ export const updateTeacherById = async (req, res, next) => {
         delete updates.email;
         delete updates.password;
 
-        // Find the user by id and role, and update the document
+        // Include the avatar if a file is uploaded
+        if (req.file) {
+            updates.avatar = req.file.filename; // Add or update the avatar field
+        }
+
+        // Find the user by ID and role, and update the document
         const updatedTeacher = await UserModel.findOneAndUpdate(
             { _id: id, role: 'teacher' },
             updates,
@@ -256,11 +288,41 @@ export const updateTeacherById = async (req, res, next) => {
             return res.status(404).json({ message: "Teacher not found or could not be updated" });
         }
 
-        res.json(updatedTeacher);
+        res.json({
+            message: 'Teacher updated successfully',
+            updatedTeacher
+        });
     } catch (error) {
         next(error);
     }
 };
+
+
+// export const updateStudentById = async (req, res, next) => {
+//     try {
+//         const { id } = req.params;
+//         const updates = { ...req.body };
+
+//         // Remove email and password fields from the updates to prevent changes
+//         delete updates.email;
+//         delete updates.password;
+
+//         // Find the user by id and role, and update the document
+//         const updateStudent = await UserModel.findOneAndUpdate(
+//             { _id: id, role: 'student' },
+//             updates,
+//             { new: true, runValidators: true, select: '-password' }
+//         );
+
+//         if (!updateStudent) {
+//             return res.status(404).json({ message: "Student not found or could not be updated" });
+//         }
+
+//         res.json(updateStudent);
+//     } catch (error) {
+//         next(error);
+//     }
+// };
 
 export const updateStudentById = async (req, res, next) => {
     try {
@@ -270,6 +332,11 @@ export const updateStudentById = async (req, res, next) => {
         // Remove email and password fields from the updates to prevent changes
         delete updates.email;
         delete updates.password;
+
+        // Include the avatar if a file is uploaded
+        if (req.file) {
+            updates.avatar = req.file.filename; // Add or update the avatar field
+        }
 
         // Find the user by id and role, and update the document
         const updateStudent = await UserModel.findOneAndUpdate(
@@ -282,12 +349,14 @@ export const updateStudentById = async (req, res, next) => {
             return res.status(404).json({ message: "Student not found or could not be updated" });
         }
 
-        res.json(updateStudent);
+        res.json({
+            message: 'Student updated successfully',
+            updateStudent
+        });
     } catch (error) {
         next(error);
     }
 };
-
 
 
 export const deleteUser = async (req, res, next) => {
