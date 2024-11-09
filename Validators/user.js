@@ -4,7 +4,7 @@ import joiObjectid from "joi-objectid";
 Joi.objectId = joiObjectid(Joi)
 
 export const registerUserValidator= Joi.object({
-    classes: Joi.objectId().required(),
+    classes: Joi.objectId(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     email: Joi.string().required(),
