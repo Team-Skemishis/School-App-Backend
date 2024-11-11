@@ -51,7 +51,7 @@ export const registerTeacher = async (req, res, next) => {
         await mailTransporter.sendMail({
             to: value.email,
             subject: 'TEACHER REGISTRATION',
-            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nThank you,\nThe Team`
+            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nTo log in and manage your account, please visit the following link:\nhttps://schoolmgtwebapp.netlify.app/\n\nThank you,\nThe Team`
         });
 
         res.json('User created successfully');

@@ -1,6 +1,7 @@
 import { attendanceModel } from "../Models/attendance.js";
 import { ClassModel } from "../Models/class.js";
 import { StudentModel } from "../Models/student.js";
+import { UserModel } from "../Models/user.js";
 
 export const addAttendance = async (req,res,next) => {
 try {
@@ -10,7 +11,7 @@ try {
             message: "Both first name and surname are required"
         })
     }
-    const student = await StudentModel.findOne({firstname, surname})
+    const student = await UserModel.findOne({firstname, surname})
     if (!student) {
         return res.status(404).json('student not found')
     }
