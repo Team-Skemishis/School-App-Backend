@@ -11,6 +11,7 @@ export const registerUserValidator= Joi.object({
     password: Joi.string().required(),
     avatar: Joi.string(),
     schoolName: Joi.string(),
+    redirectURL: Joi.string(),
     gender: Joi.string().valid('male', 'female'),
     role: Joi.string().valid('teacher', 'student', 'admin')
 })

@@ -10,6 +10,7 @@ export const userSchema = new Schema({
     password:{type:String, required:true},
     avatar:{type:String},
     schoolName:{type:String},
+    redirectURL: {type: String},
     classes:{type: Types.ObjectId, ref:'class'},
     gender: {type: String, enum:['male', 'female']},
     role:{type: String, default: 'admin', enum:['student', 'teacher', 'admin']}
