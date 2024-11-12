@@ -36,3 +36,10 @@ export const studentAvatar = multer({
     }),
     preservePath: true
 })
+export const announcementImage = multer({
+    storage: multerSaveFilesOrg({
+        apiAccessToken: process.env.SAVEFILESORG_API_KEY,
+        relativePath: '/announcement-images/*'
+    }),
+    preservePath: true
+})
