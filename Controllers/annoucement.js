@@ -18,7 +18,7 @@ export const createAnnouncement = async (req, res, next) => {
         const announcement = await AnnouncementModel.create({
             ...value,
             createdBy: req.auth.id,
-            coverImage: req.file.filename
+            coverImage: req.file?.filename
         });
 
         res.status(201).json(announcement);
