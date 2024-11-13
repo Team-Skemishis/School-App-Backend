@@ -8,6 +8,7 @@ import staffRouter from "./Routes/staff.js"
 import attendanceRouter from "./Routes/attendance.js"
 import classRouter from "./Routes/class.js"
 import announcementRouter from "./Routes/annoucement.js"
+import timetableRouter from "./Routes/timetable.js"
 
 await mongoose.connect(process.env.MONGO_URI)
 
@@ -23,6 +24,7 @@ app.use(staffRouter)
 app.use(attendanceRouter)
 app.use(classRouter)
 app.use(announcementRouter)
+app.use(timetableRouter)
 
 
 const port = 3004
