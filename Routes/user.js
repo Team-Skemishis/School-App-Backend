@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { deleteStudentById, deleteTeacherById, deleteUser, getAllStudents, getAllTeachers, getAllUsers, getStudentById, getTeacherById, getUserById, loginUser, logOut, registerStudent, registerTeacher, registerUser, updateStudentById, updateTeacherById, updateUser } from "../Controllers/user.js";
+import { deleteStudentById, deleteTeacherById, deleteUser, getAllStudents, getAllTeachers, getAllUsers, getStudentById, getTeacherById, getUserById, loginUser, logOut, registerStudent, registerTeacher, registerUser, updateStudentById, updateTeacherById, updateUser, changePassword } from "../Controllers/user.js";
 import { studentAvatar, teacherAvatar } from "../Middlewares/upload.js";
+import { isAuthenticated } from "../Middlewares/auth.js";
 
 const userRouter = Router()
 
@@ -21,5 +22,6 @@ userRouter.patch('/users/students/:id', studentAvatar.single('avatar'),updateStu
 userRouter.delete('/users/:id', deleteUser)
 userRouter.delete('/users/teachers/:id',deleteTeacherById )
 userRouter.delete('/users/students/:id',deleteStudentById )
+userRouter.post('/users/change-password',isAuthenticated, changePassword)
 
 export default userRouter

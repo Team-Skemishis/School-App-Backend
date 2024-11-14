@@ -1,7 +1,6 @@
-
 import { UserModel } from "../Models/user.js";
 import { mailTransporter } from "../Utils/mail.js";
-import { loginUserValidator, registerUserValidator } from "../Validators/user.js";
+import { loginUserValidator, registerUserValidator, changePasswordValidator } from "../Validators/user.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
@@ -11,12 +10,16 @@ try {
         if (error) {
             return res.status(422).json(error)   
         }
-       const user = await UserModel.findOne({email: value.email})
+        
+        // Remove confirmPassword before saving to database
+        const { confirmPassword, ...userDataToSave } = value;
+        
+        const user = await UserModel.findOne({email: value.email})
         if (user) {
             return res.status(409).json('User already exists')
         }
-        const hashedPassword = bcrypt.hashSync(value.password, 10)
-        await UserModel.create({...value, password: hashedPassword})
+        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10)
+        await UserModel.create({...userDataToSave, password: hashedPassword})
         await mailTransporter.sendMail({
             to: value.email,
             subject: 'USER REGISTRATION',
@@ -35,19 +38,18 @@ export const registerTeacher = async (req, res, next) => {
             return res.status(422).json(error);
         }
 
-        // Check if the user already exists
+        // Remove confirmPassword before saving to database
+        const { confirmPassword, ...userDataToSave } = value;
+
         const user = await UserModel.findOne({ email: value.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        // Hash the password
-        const hashedPassword = bcrypt.hashSync(value.password, 10);
+        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10);
+        await UserModel.create({ ...userDataToSave, password: hashedPassword });
 
-        // Create the new user
-        await UserModel.create({ ...value, password: hashedPassword });
-
-        // Send an email with email and password details, including a recommendation to reset the password
+        // Rest of the email sending code...
         await mailTransporter.sendMail({
             to: value.email,
             subject: 'TEACHER REGISTRATION',
@@ -59,6 +61,7 @@ export const registerTeacher = async (req, res, next) => {
         next(error);
     }
 };
+
 export const registerStudent = async (req, res, next) => {
     try {
         const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
@@ -66,19 +69,18 @@ export const registerStudent = async (req, res, next) => {
             return res.status(422).json(error);
         }
 
-        // Check if the user already exists
+        // Remove confirmPassword before saving to database
+        const { confirmPassword, ...userDataToSave } = value;
+
         const user = await UserModel.findOne({ email: value.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        // Hash the password
-        const hashedPassword = bcrypt.hashSync(value.password, 10);
+        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10);
+        await UserModel.create({ ...userDataToSave, password: hashedPassword });
 
-        // Create the new user
-        await UserModel.create({ ...value, password: hashedPassword });
-
-        // Send an email with email and password details, including a recommendation to reset the password
+        // Rest of the email sending code...
         await mailTransporter.sendMail({
             to: value.email,
             subject: 'STUDENT REGISTRATION',
@@ -90,8 +92,6 @@ export const registerStudent = async (req, res, next) => {
         next(error);
     }
 };
-
-
 
 export const loginUser = async (req,res,next) => {
 try {
@@ -352,6 +352,46 @@ export const deleteStudentById = async (req, res, next) => {
         }
 
         res.status(200).json({ message: "student successfully deleted" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const changePassword = async (req, res, next) => {
+    try {
+        const { error, value } = changePasswordValidator.validate(req.body);
+        if (error) {
+            return res.status(422).json(error);
+        }
+
+        // Get user from database (using the id from auth token)
+        const user = await UserModel.findById(req.auth.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify current password
+        const isCurrentPasswordValid = bcrypt.compareSync(value.currentPassword, user.password);
+        if (!isCurrentPasswordValid) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        // Hash new password and update
+        const hashedNewPassword = bcrypt.hashSync(value.newPassword, 10);
+        user.password = hashedNewPassword;
+        await user.save();
+
+        // Send email notification
+        await mailTransporter.sendMail({
+            to: user.email,
+            subject: 'Password Changed Successfully',
+            text: `Dear ${user.firstName} ${user.lastName},\n\nYour password has been successfully changed. If you did not make this change, please contact the administrator immediately.\n\nThank you,\nThe Team`
+        });
+
+        user.hasChangedDefaultPassword = true;
+        await user.save();
+
+        res.json({ message: 'Password changed successfully' });
     } catch (error) {
         next(error);
     }
