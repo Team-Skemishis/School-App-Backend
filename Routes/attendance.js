@@ -6,7 +6,7 @@ const attendanceRouter = Router()
 
 
 attendanceRouter.post('/students/attendance', isAuthenticated, addAttendance)
-attendanceRouter.get('/students/attendance', isAuthenticated, getStudentAttendance)
+attendanceRouter.get('/students/attendance/:id', isAuthenticated, getStudentAttendance)
 attendanceRouter.patch('/students/attendance/:id', isAuthenticated, updateStudentAttendance)
 attendanceRouter.delete('/students/attendance/:id', isAuthenticated, deleteStudentAttendance)
 

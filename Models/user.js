@@ -14,7 +14,6 @@ export const userSchema = new Schema({
     gender: {type: String, enum:['male', 'female']},
     role:{type: String, default: 'admin', enum:['student', 'teacher', 'admin']},
     hasChangedDefaultPassword: { type: Boolean, default: false }
-
 })
 
 
