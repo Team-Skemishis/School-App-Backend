@@ -26,6 +26,16 @@ export const getAllTimetable = async (req, res, next) => {
     res.status(200).json(timetable)
 }
 
+export const getTimetableById = async (req, res, next) => {
+    try {
+        const timetable = await TimetableModel.findById(req.params.id)
+        res.status(201).json(timetable)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 // Update a timetable entry
 export const updateTimetableEntry = async (req, res, next) => {
     try {
