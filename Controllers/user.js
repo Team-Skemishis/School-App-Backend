@@ -4,51 +4,67 @@ import { loginUserValidator, registerUserValidator, changePasswordValidator } fr
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-export const registerUser = async (req,res,next) => {
-try {
-        const {error, value} = registerUserValidator.validate(req.body)
-        if (error) {
-            return res.status(422).json(error)   
-        }
-        
-        
-        const user = await UserModel.findOne({email: value.email})
-        if (user) {
-            return res.status(409).json('User already exists')
-        }
-        const hashedPassword = bcrypt.hashSync(value.password, 10)
-        await UserModel.create({...value, password: hashedPassword})
-        await mailTransporter.sendMail({
-            to: value.email,
-            subject: 'USER REGISTRATION',
-            text: 'Your Account has been registered successfully'
-        })
-        res.json('user created successfully')
-} catch (error) {
-    next(error)   
-}
-}
-
-export const registerTeacher = async (req, res, next) => {
+export const registerUser = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
+        const { error, value } = registerUserValidator.validate(req.body);
         if (error) {
             return res.status(422).json(error);
         }
 
-        const user = await UserModel.findOne({ email: value.email });
+        const { confirmPassword, ...userData } = value; // Destructure to exclude confirmPassword
+
+        if (userData.password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const user = await UserModel.findOne({ email: userData.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        const hashedPassword = bcrypt.hashSync(value.password, 10);
-        await UserModel.create({ ...value, password: hashedPassword });
+        const hashedPassword = bcrypt.hashSync(userData.password, 10);
+        await UserModel.create({ ...userData, password: hashedPassword });
 
-        // Rest of the email sending code...
         await mailTransporter.sendMail({
-            to: value.email,
+            to: userData.email,
+            subject: 'USER REGISTRATION',
+            text: 'Your Account has been registered successfully',
+        });
+
+        res.json('user created successfully');
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const registerTeacher = async (req, res, next) => {
+    try {
+        const { error, value } = registerUserValidator.validate({ ...req.body, avatar: req.file?.filename });
+        if (error) {
+            return res.status(422).json(error);
+        }
+
+        // Destructure to exclude confirmPassword
+        const { confirmPassword, ...teacherData } = value;
+
+        if (teacherData.password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const user = await UserModel.findOne({ email: teacherData.email });
+        if (user) {
+            return res.status(409).json('User already exists');
+        }
+
+        const hashedPassword = bcrypt.hashSync(teacherData.password, 10);
+        await UserModel.create({ ...teacherData, password: hashedPassword });
+
+        // Rest of the email sending code
+        await mailTransporter.sendMail({
+            to: teacherData.email,
             subject: 'TEACHER REGISTRATION',
-            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nTo log in and manage your account, please visit the following link:\n${value.redirectURL}\n\nThank you,\nThe Team`
+            text: `Dear ${teacherData.firstName} ${teacherData.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${teacherData.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nTo log in and manage your account, please visit the following link:\n${teacherData.redirectURL}\n\nThank you,\nThe Team`
         });
 
         res.json('User created successfully');
@@ -59,24 +75,31 @@ export const registerTeacher = async (req, res, next) => {
 
 export const registerStudent = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
+        const { error, value } = registerUserValidator.validate({ ...req.body, avatar: req.file?.filename });
         if (error) {
             return res.status(422).json(error);
         }
 
-        const user = await UserModel.findOne({ email: value.email });
+        // Destructure to exclude confirmPassword
+        const { confirmPassword, ...studentData } = value;
+
+        if (studentData.password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const user = await UserModel.findOne({ email: studentData.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        const hashedPassword = bcrypt.hashSync(value.password, 10);
-        await UserModel.create({ ...value, password: hashedPassword });
+        const hashedPassword = bcrypt.hashSync(studentData.password, 10);
+        await UserModel.create({ ...studentData, password: hashedPassword });
 
-        // Rest of the email sending code...
+        // Send an email
         await mailTransporter.sendMail({
-            to: value.email,
+            to: studentData.email,
             subject: 'STUDENT REGISTRATION',
-            text: `Dear ${value.firstName} ${value.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${value.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nThank you,\nThe Team`
+            text: `Dear ${studentData.firstName} ${studentData.lastName},\n\nYour account has been registered successfully.\n\nHere are your login details:\nEmail: ${studentData.email}\nPassword: ${value.password}\n\nFor your security, we strongly recommend that you reset your password after your first login.\n\nThank you,\nThe Team`
         });
 
         res.json('User created successfully');
@@ -354,6 +377,10 @@ export const changePassword = async (req, res, next) => {
         const { error, value } = changePasswordValidator.validate(req.body);
         if (error) {
             return res.status(422).json(error);
+        }
+
+        if (value.newPassword !== value.confirmNewPassword) {
+            return res.status(400).json({ message: 'New passwords do not match' });
         }
 
         // Get user from database (using the id from auth token)

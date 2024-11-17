@@ -9,8 +9,7 @@ export const registerUserValidator= Joi.object({
     lastName: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    confirmPassword: Joi.string().valid(Joi.ref('password')).required()
-        .messages({ 'any.only': 'Passwords do not match' }),
+    confirmPassword: Joi.string().required(),
     avatar: Joi.string(),
     schoolName: Joi.string(),
     redirectURL: Joi.string(),
@@ -27,6 +26,5 @@ export const loginUserValidator = Joi.object({
 export const changePasswordValidator = Joi.object({
     currentPassword: Joi.string().required(),
     newPassword: Joi.string().required(),
-    confirmNewPassword: Joi.string().valid(Joi.ref('newPassword')).required()
-        .messages({ 'any.only': 'New passwords do not match' })
+    confirmNewPassword: Joi.string().required()
 })
