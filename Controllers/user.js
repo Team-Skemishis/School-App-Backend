@@ -11,15 +11,13 @@ try {
             return res.status(422).json(error)   
         }
         
-        // Remove confirmPassword before saving to database
-        const { confirmPassword, ...userDataToSave } = value;
         
         const user = await UserModel.findOne({email: value.email})
         if (user) {
             return res.status(409).json('User already exists')
         }
-        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10)
-        await UserModel.create({...userDataToSave, password: hashedPassword})
+        const hashedPassword = bcrypt.hashSync(value.password, 10)
+        await UserModel.create({...value, password: hashedPassword})
         await mailTransporter.sendMail({
             to: value.email,
             subject: 'USER REGISTRATION',
@@ -38,16 +36,13 @@ export const registerTeacher = async (req, res, next) => {
             return res.status(422).json(error);
         }
 
-        // Remove confirmPassword before saving to database
-        const { confirmPassword, ...userDataToSave } = value;
-
         const user = await UserModel.findOne({ email: value.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10);
-        await UserModel.create({ ...userDataToSave, password: hashedPassword });
+        const hashedPassword = bcrypt.hashSync(value.password, 10);
+        await UserModel.create({ ...value, password: hashedPassword });
 
         // Rest of the email sending code...
         await mailTransporter.sendMail({
@@ -69,16 +64,13 @@ export const registerStudent = async (req, res, next) => {
             return res.status(422).json(error);
         }
 
-        // Remove confirmPassword before saving to database
-        const { confirmPassword, ...userDataToSave } = value;
-
         const user = await UserModel.findOne({ email: value.email });
         if (user) {
             return res.status(409).json('User already exists');
         }
 
-        const hashedPassword = bcrypt.hashSync(userDataToSave.password, 10);
-        await UserModel.create({ ...userDataToSave, password: hashedPassword });
+        const hashedPassword = bcrypt.hashSync(value.password, 10);
+        await UserModel.create({ ...value, password: hashedPassword });
 
         // Rest of the email sending code...
         await mailTransporter.sendMail({
@@ -387,9 +379,6 @@ export const changePassword = async (req, res, next) => {
             subject: 'Password Changed Successfully',
             text: `Dear ${user.firstName} ${user.lastName},\n\nYour password has been successfully changed. If you did not make this change, please contact the administrator immediately.\n\nThank you,\nThe Team`
         });
-
-        user.hasChangedDefaultPassword = true;
-        await user.save();
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {

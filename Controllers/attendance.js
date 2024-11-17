@@ -112,3 +112,13 @@ export const deleteStudentAttendance = async (req, res) => {
         res.status(500).json({ message: "Error deleting attendance", error: error.message });
     }
 };
+
+// Get attendance by ID
+export const getAttendanceById = async (req, res, next) => {
+    try {
+        const attendance = await attendanceModel.findById(req.params.id)
+        res.status(201).json(attendance)
+    } catch (error) {
+        next(error)
+    }
+}
