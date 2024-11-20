@@ -36,12 +36,9 @@ export const addAttendance = async (req, res) => {
             classID
         });
 
-        const populatedAttendance = await newAttendance.populate([
-            { path: 'studentID', select: 'name' },
-            { path: 'classID', select: 'className' }
-        ]);
 
-        res.status(201).json(populatedAttendance);
+
+        res.status(201).json(newAttendance);
     } catch (error) {
         console.error('Error in addAttendance:', error);
         res.status(500).json({ message: "Error adding attendance", error: error.message });
