@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 export const registerUser = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate(req.body);
+        const { error, value } = registerUserValidator.validate({...req.body, avatar:req.file?.filename});
         if (error) {
             return res.status(422).json(error);
         }

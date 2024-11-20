@@ -33,7 +33,7 @@ export const teacherAvatar = multer({
 export const adminAvatar = multer({
     storage: multerSaveFilesOrg({
         apiAccessToken: process.env.SAVEFILESORG_API_KEY,
-        relativePath: '/teachers-avatar/*'
+        relativePath: '/admin-avatar/*'
     }),
     preservePath: true
 })
