@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { deleteStudentById, deleteTeacherById, deleteUser, getAllStudents, getAllTeachers, getAllUsers, getStudentById, getTeacherById, getUserById, loginUser, logOut, registerStudent, registerTeacher, registerUser, updateStudentById, updateTeacherById, updateUser, changePassword } from "../Controllers/user.js";
-import { studentAvatar, teacherAvatar } from "../Middlewares/upload.js";
+import { adminAvatar, studentAvatar, teacherAvatar } from "../Middlewares/upload.js";
 import { isAuthenticated } from "../Middlewares/auth.js";
 
 const userRouter = Router()
 
-userRouter.post('/users/register', registerUser)
+userRouter.post('/users/register', adminAvatar.single('avatar'), registerUser)
 userRouter.post('/teachers/register', teacherAvatar.single('avatar'), registerTeacher)
 userRouter.post('/students/register', studentAvatar.single('avatar'), registerStudent)
 userRouter.post('/users/login', loginUser)
